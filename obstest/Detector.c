@@ -86,13 +86,13 @@ static DetectedFace *postProcessing(DetectedFace *faces, int size, int *newsize)
 	int *regionsInfos;
 	DetectedFace **regions = getRegions(faces, size, &regionsInfos);
 	int nbRegions = *regionsInfos;
-	int *confidenceVals = malloc(nbRegions * sizeof(int));
+	double *confidenceVals = malloc(nbRegions * sizeof(double));
 
 	for(int i = 0; i < nbRegions; ++i)
 	{
 		DetectedFace *region = regions[i];
 		int nbFacesInRegion = regionsInfos[i+1];
-		int confidence = nbFacesInRegion / region->w;
+		double confidence = (double)nbFacesInRegion / (double)region->w;
 		if(confidence > CONFIDENCE_THRESHOLD)
 		{
 			trueFaces1[size1] = region[nbFacesInRegion/2];
@@ -143,16 +143,19 @@ static DetectedFace *postProcessing(DetectedFace *faces, int size, int *newsize)
 }
 
 
-static int getDeviation(IntegralImage *image, IntegralImage *squaredImage, int x, int y, int w, int h)
+static int getDeviation(IntegralImage *image, IntegralImage *squaredImage, double scale ,int x, int y, int w, int h)
 {
-	int nbPixs = image->width * image->height;
+	int nbPixs = (int)((24*scale) * (24*scale));
 	int sum = IntegralImageGetSum(image, x, y, w, h);
 	int squaredSum = IntegralImageGetSum(squaredImage, x, y, w, h);
 	int average = sum / nbPixs;
 	int variance = squaredSum / nbPixs - average*average;
-	if(variance < 0)
-		variance = -variance;
-	return variance > 0 ? sqrt(variance) : 1;
+	if(variance > 0)
+        {
+          return sqrt(variance);
+        }else{
+          return 1;
+        }
 }
 
 static void pixelToRed(guchar *pixel)
@@ -215,7 +218,7 @@ void detectFaces(GtkImage *image, StrongClassifier *sc)
 
 			while(width <= maxWidth && height <= maxHeight)
 			{
-				int deviation = getDeviation(intImage, squaredImage, x, y, width, height);
+				int deviation = getDeviation(intImage, squaredImage, scale ,x, y, width, height);
 				
 				if(StrongClassifierCheck(sc, intImage, x, y, scale, deviation))
 				{

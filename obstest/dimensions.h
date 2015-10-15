@@ -4,7 +4,7 @@
 
 #define WIN_WIDTH 24
 #define WIN_HEIGHT 24
-#define WIN_RATIO 1.5
+#define WIN_RATIO 1.25
 #define CONFIDENCE_THRESHOLD 0.125
 
 

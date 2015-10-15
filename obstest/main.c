@@ -10,7 +10,7 @@ static void activate (GtkApplication *app, gpointer user_data)
 	(void)(user_data);
 	
 	GtkWidget *window;
-	GtkWidget *image = gtk_image_new_from_file("../misc/idris.jpg");
+        GtkWidget *image = gtk_image_new_from_file("../misc/sequei_i.jpg");
 
 	window = gtk_application_window_new (app);
 	gtk_window_set_title (GTK_WINDOW (window), "Window");

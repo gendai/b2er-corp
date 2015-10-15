@@ -22,5 +22,5 @@ int WeakClassifierCheck(WeakClassifier *wc, IntegralImage *image, int x, int y, 
 	int featureValue = FeatureGetValue(wc->feature, image, x, y, scale);
 	int sizedValue = featureValue / (scale*scale);
 	int normalizedValue = (sizedValue * 40) / deviation;
-	return wc->parity * sizedValue < wc->parity * wc->threshold;
+	return wc->parity * normalizedValue < wc->parity * wc->threshold;
 }

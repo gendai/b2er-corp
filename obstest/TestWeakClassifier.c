@@ -40,16 +40,17 @@ TestWeakClassifier * TestWeakClassifierTrain(TrainingImage **images, double vali
 			if(positiveError < best->errors)
 			{
 				TestWeakClassifierFree(best);
-				best = TestWeakClassifierNew(fv, fv->values[i].value + 1, 1, positiveError);
+				best = TestWeakClassifierNew(fv, fv->values[i].value + 1.0, 1, positiveError);
 			}
 		}
 		else
 		{
+			positiveError += images[fv->values[i].i]->weight;
 			double negativeError = 1 - positiveError;
 			if(negativeError < best->errors)
 			{
 				TestWeakClassifierFree(best);
-				best = TestWeakClassifierNew(fv, fv->values[i].value - 1, -1, negativeError);	
+				best = TestWeakClassifierNew(fv, fv->values[i].value - 1.0, -1, negativeError);	
 			}
 		}
 	}

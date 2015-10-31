@@ -20,6 +20,7 @@ void StrongClassifierFree(StrongClassifier *sc);
 
 int StrongClassifierSave(StrongClassifier *sc, char *path);
 int StrongClassifierCheck(StrongClassifier *cs, IntegralImage *image, int x, int y, double scale, int deviation);
+void StrongClassifierPrint(StrongClassifier *sc);
 
 StrongClassifier *StrongClassifierTrain(char *trainDir);
 

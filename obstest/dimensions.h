@@ -6,7 +6,7 @@
 #define WIN_HEIGHT 24
 #define WIN_RATIO 1.25
 #define CONFIDENCE_THRESHOLD 0.125
-#define CLASSIFIERS_SIZE 400
+#define CLASSIFIERS_SIZE 600
 
 
 #endif

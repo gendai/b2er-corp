@@ -6,6 +6,7 @@
 #include <dirent.h>
 #include <gtk/gtk.h>
 #include <math.h>
+#include <assert.h>
 #include "Vector.h"
 #include "dimensions.h"
 #include "TrainingImage.h"
@@ -79,6 +80,16 @@ int StrongClassifierSave(StrongClassifier *sc, char *path)
 	return 1;
 }
 
+void StrongClassifierPrint(StrongClassifier *sc)
+{
+	for(int i = 0; i < sc->size; ++i)
+	{
+		WeakClassifier *wc = sc->wcs[i];
+		Feature *feature = wc->feature;
+		printf("%d: A=%g, T=%d, P=%d, %d:(%d, %d, %d, %d)\n", i+1, wc->alpha, wc->threshold, wc->parity, feature->type, feature->x, feature->y, feature->w, feature->h);
+	}
+}
+
 int StrongClassifierCheck(StrongClassifier *cs, IntegralImage *image, int x, int y, double scale, int deviation)
 {
 	double val = 0;
@@ -89,15 +100,6 @@ int StrongClassifierCheck(StrongClassifier *cs, IntegralImage *image, int x, int
 	}
 	return val >= cs->alphaTotal / 2;
 }
-
-
-
-
-
-
-
-
-
 
 //  Training
 
@@ -114,7 +116,9 @@ static char **readDir(char *dirPath, size_t *size)
 	{
 		if(dir->d_name[0] != '.')
 		{
-			VectorInsertBack(v, dir->d_name);
+			char *str = malloc(strlen(dir->d_name)+1);
+			strcpy(str, dir->d_name);
+			VectorInsertBack(v, str);
 		}
 	}
 
@@ -129,7 +133,7 @@ static GreyImage **LoadImages(char *dir, size_t *size)
 {
 	size_t dirLen = strlen(dir);
 	char **files = readDir(dir, size);
-	GreyImage **images = malloc(sizeof(GreyImage *) * *size);
+	GreyImage **images = malloc(*size * sizeof(GreyImage *));
 
 	for(size_t i = 0; i < *size; ++i)
 	{
@@ -137,11 +141,17 @@ static GreyImage **LoadImages(char *dir, size_t *size)
 		strcpy(file, dir);
 		strcat(file, files[i]);
 		GtkImage *image = (GtkImage *) gtk_image_new_from_file(file);
+
+		assert(gtk_image_get_pixbuf(image));
+		
 		GreyImage *grey = GreyImageNewFromImage(image);
 		images[i] = GreyImageResize(grey, WIN_WIDTH, WIN_HEIGHT);
 		GreyImageFree(grey);
 	}
+	
 
+	printf("%s => %zu\n", dir, *size);
+	
 	return images;
 }
 

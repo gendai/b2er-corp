@@ -18,9 +18,12 @@ static void activate (GtkApplication *app, gpointer user_data)
 
 	//StrongClassifier *newClassifier = StrongClassifierTrain("../misc/5000/");
 	//StrongClassifierSave(newClassifier, "../misc/my_clas.data");
+	//StrongClassifierPrint(newClassifier);
+	
 
 	
-	/*GtkWidget *dialog = gtk_file_chooser_dialog_new("Open File",
+	
+	GtkWidget *dialog = gtk_file_chooser_dialog_new("Open File",
 													(GtkWindow *) window,
 													GTK_FILE_CHOOSER_ACTION_OPEN,
 													"Cancel",
@@ -42,9 +45,9 @@ static void activate (GtkApplication *app, gpointer user_data)
 		StrongClassifier *sc = StrongClassifierNewFromFile("../misc/my_clas.data");
 		detectFaces((GtkImage *) image, sc);
 		gtk_container_add (GTK_CONTAINER (window), image);
-		}*/
+		}
 	
-
+	
 	
 	
 	gtk_widget_show_all (window);

@@ -1,6 +1,7 @@
 #include "FeatureValues.h"
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 static void featuresSort(FeatureValue *a, size_t n)
 {
@@ -36,6 +37,12 @@ FeatureValues *FeatureValuesNew(Feature *feature, TrainingImage **images, size_t
 	}
 
 	featuresSort(fv->values, size);
+
+	for(size_t i = 0; i < size-1; ++i)
+	{
+		assert(fv->values[i].value <= fv->values[i+1].value);
+	}
+	
 	return fv;
 }
 

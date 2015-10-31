@@ -1,5 +1,6 @@
 #include "IntegralImage.h"
 #include <stdlib.h>
+#include <math.h>
 
 IntegralImage *IntegralImageNew(GreyImage *image)
 {
@@ -41,4 +42,17 @@ int IntegralImageGetSum(IntegralImage *image, int x, int y, int w, int h)
 	int r3 = !y ? 0 : image->pixels[(y-1)*width + x+w-1];
 	int r4 = image->pixels[(y+h-1)*width + x+w-1];
 	return r1 + r4 - r2 - r3;
+}
+
+int IntegralImageGetDeviation(IntegralImage *image, IntegralImage *squaredImage, double scale ,int x, int y, int w, int h)
+{
+	int nbPixs = (int)((24*scale) * (24*scale));
+	int sum = IntegralImageGetSum(image, x, y, w, h);
+	int squaredSum = IntegralImageGetSum(squaredImage, x, y, w, h);
+	int average = sum / nbPixs;
+	int variance = squaredSum / nbPixs - average*average;
+	if(variance > 0)
+		return sqrt(variance);
+	else
+		return 1;
 }

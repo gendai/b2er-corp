@@ -1,5 +1,8 @@
 #include "Feature.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include "Vector.h"
+#include "dimensions.h"
 
 Feature *FeatureNew(int type, int x, int y, int w, int h)
 {
@@ -85,4 +88,43 @@ int FeatureGetValue(Feature *feature, IntegralImage *image,  int x, int y, doubl
 		return getThreeHorizontalValue(image, x, y, w, h);
 
 	return 0;
+}
+
+Feature **FeatureListAll(size_t *size)
+{
+	Vector *features = VectorNew();
+
+	static int featuresMinWidth[]  = { 2, 1, 2, 1, 3};
+	static int featuresMinHeight[] = { 2, 2, 1, 3, 1};
+
+	for(int type = 1; type <= 5; ++type)
+	{
+		int minW = featuresMinWidth[type-1];
+		int minH = featuresMinHeight[type-1];
+		int maxX = WIN_WIDTH - minW;
+		int maxY = WIN_HEIGHT - minH;
+
+		for(int x = 0; x <= maxX; ++x)
+		{
+			for(int y = 0; y < maxY; ++y)
+			{
+				
+				int maxW = WIN_WIDTH - x;
+				int maxH = WIN_HEIGHT - y;
+
+				for(int w = minW; w <= maxW; w += minW)
+				{
+					for(int h = minH; h <= maxH; h += maxH)
+					{
+						VectorInsertBack(features, FeatureNew(type, x, y, w, h));
+					}
+				}
+			}
+		}
+	}
+
+	Feature **res = (Feature **) VectorData(features);
+	*size = VectorSize(features);
+	free(features);
+	return res;
 }

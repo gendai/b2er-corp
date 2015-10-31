@@ -3,7 +3,7 @@ program_C_SRCS := $(wildcard *.c)
 program_C_OBJS := ${program_C_SRCS:.c=.o}
 program_INCLUDE_DIRS := 
 program_LIBRARY_DIRS :=
-program_LIBRARIES := 
+program_LIBRARIES := gsl gslcblas m
 
 CC := gcc
 CFLAGS := -Wall -Wextra -std=c99 -O3 `pkg-config --cflags gtk+-3.0`

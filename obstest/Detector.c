@@ -142,22 +142,6 @@ static DetectedFace *postProcessing(DetectedFace *faces, int size, int *newsize)
 	return trueFaces2;
 }
 
-
-static int getDeviation(IntegralImage *image, IntegralImage *squaredImage, double scale ,int x, int y, int w, int h)
-{
-	int nbPixs = (int)((24*scale) * (24*scale));
-	int sum = IntegralImageGetSum(image, x, y, w, h);
-	int squaredSum = IntegralImageGetSum(squaredImage, x, y, w, h);
-	int average = sum / nbPixs;
-	int variance = squaredSum / nbPixs - average*average;
-	if(variance > 0)
-        {
-          return sqrt(variance);
-        }else{
-          return 1;
-        }
-}
-
 static void pixelToRed(guchar *pixel)
 {
 	pixel[0] = 255;
@@ -187,7 +171,7 @@ static void addRect(GdkPixbuf *pixbuf, int x, int y, int w, int h)
 void detectFaces(GtkImage *image, StrongClassifier *sc)
 {
 
-	static DetectedFace faces[200000];
+	static DetectedFace faces[20000000];
 	int nbFaces = 0;
 
 	GdkPixbuf *pixbuf = gtk_image_get_pixbuf(image);
@@ -218,7 +202,7 @@ void detectFaces(GtkImage *image, StrongClassifier *sc)
 
 			while(width <= maxWidth && height <= maxHeight)
 			{
-				int deviation = getDeviation(intImage, squaredImage, scale ,x, y, width, height);
+				int deviation = IntegralImageGetDeviation(intImage, squaredImage, scale ,x, y, width, height);
 				
 				if(StrongClassifierCheck(sc, intImage, x, y, scale, deviation))
 				{

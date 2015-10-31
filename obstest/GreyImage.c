@@ -14,9 +14,7 @@ GreyImage *GreyImageNew(int width, int height)
 
 static guchar greyPixel(guchar *pixel)
 {
-	guchar val = (guchar) ( ( (int) pixel[0] + (int) pixel[1] + (int) pixel[2]  )/3);
-	//pixel[0] = pixel[1] = pixel[2] = val;
-	return val;
+	return (guchar) ( ( (int) pixel[0] + (int) pixel[1] + (int) pixel[2]  )/3);
 }
 
 GreyImage *GreyImageNewFromImage(GtkImage *image)
@@ -80,8 +78,8 @@ GtkImage *GreyImageToImage(GreyImage *image)
 GreyImage *GreyImageResize(GreyImage *image, int outW, int outH)
 {
 	GreyImage *scaled = GreyImageNew(outW, outH);
-	guchar *inP = image->pixels;
-	guchar *outP = scaled->pixels;
+	int *inP = image->pixels;
+	int *outP = scaled->pixels;
 	int inW = image->width;
 	int inH = image->height;
 	int xRatio = ((inW - 1) << 16) / outW;

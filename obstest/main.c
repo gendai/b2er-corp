@@ -2,6 +2,7 @@
 #include "GreyImage.h"
 #include "StrongClassifier.h"
 #include "Detector.h"
+#include "Recon.h"
 #include <stdio.h>
 
 
@@ -15,8 +16,11 @@ static void activate (GtkApplication *app, gpointer user_data)
 	gtk_window_set_title (GTK_WINDOW (window), "Window");
 	gtk_window_set_default_size (GTK_WINDOW (window), 1500, 1000);
 
+	//StrongClassifier *newClassifier = StrongClassifierTrain("../misc/5000/");
+	//StrongClassifierSave(newClassifier, "../misc/my_clas.data");
+
 	
-	GtkWidget *dialog = gtk_file_chooser_dialog_new("Open File",
+	/*GtkWidget *dialog = gtk_file_chooser_dialog_new("Open File",
 													(GtkWindow *) window,
 													GTK_FILE_CHOOSER_ACTION_OPEN,
 													"Cancel",
@@ -35,15 +39,19 @@ static void activate (GtkApplication *app, gpointer user_data)
 		gtk_widget_destroy(dialog);
 
 		GtkWidget *image = gtk_image_new_from_file(imagePath);
-		StrongClassifier *sc = StrongClassifierNewFromFile("../misc/classifier.data");
+		StrongClassifier *sc = StrongClassifierNewFromFile("../misc/my_clas.data");
 		detectFaces((GtkImage *) image, sc);
 		gtk_container_add (GTK_CONTAINER (window), image);
-	}
+		}*/
+	
 
 	
 	
 	gtk_widget_show_all (window);
 }
+
+
+
 
 int main (int argc, char **argv)
 {

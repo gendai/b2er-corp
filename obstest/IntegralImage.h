@@ -12,8 +12,9 @@ struct IntegralImage
 typedef struct IntegralImage IntegralImage;
 
 IntegralImage *IntegralImageNew(GreyImage *image);
+void IntegralImageFree(IntegralImage *image);
 int IntegralImageGetSum(IntegralImage *image, int x, int y, int w, int h);
-
+int IntegralImageGetDeviation(IntegralImage *image, IntegralImage *squaredImage, double scale ,int x, int y, int w, int h);
 
 
 #endif

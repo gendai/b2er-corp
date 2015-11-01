@@ -3,10 +3,10 @@ program_C_SRCS := $(wildcard *.c)
 program_C_OBJS := ${program_C_SRCS:.c=.o}
 program_INCLUDE_DIRS := 
 program_LIBRARY_DIRS :=
-program_LIBRARIES := gsl gslcblas m
+program_LIBRARIES := m
 
 CC := gcc
-CFLAGS := -Wall -Wextra -std=c99 -O3 `pkg-config --cflags gtk+-3.0`
+CFLAGS := -Wall -Wextra -pedantic -std=c99 -O3 `pkg-config --cflags gtk+-3.0`
 CPPFLAGS += $(foreach includedir,$(program_INCLUDE_DIRS),-I$(includedir))
 LDFLAGS += $(foreach librarydir,$(program_LIBRARY_DIRS),-L$(librarydir))
 LDFLAGS += $(foreach library,$(program_LIBRARIES),-l$(library))

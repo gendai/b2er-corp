@@ -1,1 +1,11 @@
-Git temporaire pour le groupe b2er-corp.
+Compiling :
+
+$ cd src/
+$ make
+
+Execute :
+$ ./app <action>
+
+Possible actions :
+-detection : Open a window in order to chose an image, and display the image with the detected visages
+-databse : Command line interface for managing the user database

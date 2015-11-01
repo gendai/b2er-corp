@@ -12,14 +12,20 @@
 struct Feature
 {
 	int type;
-	int size;
+	int x;
+	int y;
+	int w;
+	int h;
 };
 typedef struct Feature Feature;
 
-Feature *featureNew(int type, int size);
-void featureFree(Feature *feature);
 
-int getFeatureValue(Feature *feature, IntegralImage *image,  int x, int y);
+Feature *FeatureNew(int type, int x, int y, int w, int h);
+void FeatureFree(Feature *feature);
+
+int FeatureGetValue(Feature *feature, IntegralImage *image,  int x, int y, double scale);
+
+Feature **FeatureListAll(size_t *size);
 
 
 #endif

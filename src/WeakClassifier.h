@@ -1,14 +1,21 @@
-#ifndef WEAKCLASSIFIER_H
-#define WEAKCLASSIFIER_H
+#ifndef DEF_WEAKCLASSIFIER
+#define DEF_WEAKCLASSIFIER
 
-typedef struct WeakClassifier
+#include "Feature.h"
+
+struct WeakClassifier
 {
-  double Alpha;
-  double Thresold;
-  int parity;
-  char *type;
-  int fx;
-  int fy;
-  int fw;
-  int fh;
-} WeakClassifier;
+	double alpha;
+	int threshold;
+	int parity;
+	Feature *feature;
+};
+typedef struct WeakClassifier WeakClassifier;
+
+WeakClassifier *WeakClassifierNew(double alpha, int threshold, int parity, Feature *feature);
+void WeakClassifierFree(WeakClassifier *wc);
+
+int WeakClassifierCheck(WeakClassifier *wc, IntegralImage *image, int x, int y, double scale, int deviation);
+
+
+#endif

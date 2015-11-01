@@ -1,68 +1,130 @@
 #include "Feature.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include "Vector.h"
+#include "dimensions.h"
 
-Feature *featureNew(int type, int size)
+Feature *FeatureNew(int type, int x, int y, int w, int h)
 {
 	Feature *feature = malloc(sizeof(Feature));
 	feature->type = type;
-	feature->size = size;
+	feature->x = x;
+	feature->y = y;
+	feature->w = w;
+	feature->h = h;
 	return feature;
 }
 
-void featureFree(Feature *feature)
+void FeatureFree(Feature *feature)
 {
 	free(feature);
 }
 
-static int getFourRectValue(Feature *feature, IntegralImage *image, int x, int y)
+static int getFourRectValue(IntegralImage *image, int x, int y, int w, int h)
 {
-	int sumTL = IntegralImageGetSum(image, x, y, feature->size, feature->size);
-	int sumTR = IntegralImageGetSum(image, x + feature->size, y, feature->size, feature->size);
-	int sumBL = IntegralImageGetSum(image, x, y + feature->size, feature->size, feature->size);
-	int sumBR = IntegralImageGetSum(image, x + feature->size, y + feature->size, feature->size, feature->size);
+    int rectW = w/2;
+	int rectH = h/2;
+	
+	int sumTL = IntegralImageGetSum(image, x, y, rectW, rectH);
+	int sumTR = IntegralImageGetSum(image, x + rectW, y, rectW, rectH);
+	int sumBL = IntegralImageGetSum(image, x, y + rectH, rectW, rectH);
+	int sumBR = IntegralImageGetSum(image, x + rectW, y + rectH, rectW, rectH);
 	return sumTL - sumTR - sumBL + sumBR;
 }
 
-static int getTwoVerticalValue(Feature *feature, IntegralImage *image, int x, int y)
+static int getTwoVerticalValue(IntegralImage *image, int x, int y, int w, int h)
 {
-	return IntegralImageGetSum(image, x, y + feature->size, feature->size, feature->size)
-		- IntegralImageGetSum(image, x, y, feature->size, feature->size);
+	int rectW = w;
+	int rectH = h/2;
+	return IntegralImageGetSum(image, x, y + rectH, rectW, rectH)
+		- IntegralImageGetSum(image, x, y, rectW, rectH);
 }
 
-static int getTwoHorizontalValue(Feature *feature, IntegralImage *image, int x, int y)
+static int getTwoHorizontalValue(IntegralImage *image, int x, int y, int w, int h)
 {
-	return IntegralImageGetSum(image, x, y, feature->size, feature->size)
-		- IntegralImageGetSum(image, x, y+feature->size, feature->size, feature->size);
-}
-
-
-static int getThreeVerticalValue(Feature *feature, IntegralImage *image, int x, int y)
-{
-	return IntegralImageGetSum(image, x, y, feature->size, feature->size)
-		- IntegralImageGetSum(image, x + feature->size, y, feature->size, feature->size)
-		+ IntegralImageGetSum(image, x + 2 * feature->size, y, feature->size, feature->size);
-}
-
-static int getThreeHorizontalValue(Feature *feature, IntegralImage *image, int x, int y)
-{
-	return IntegralImageGetSum(image, x, y, feature->size, feature->size)
-		- IntegralImageGetSum(image, x, y+feature->size, feature->size, feature->size)
-		+ IntegralImageGetSum(image, x, y + 2 * feature->size, feature->size, feature->size);
+	int rectW = w/2;
+	int rectH = h;
+	return IntegralImageGetSum(image, x, y, rectW, rectH)
+		- IntegralImageGetSum(image, x + rectW, y, rectW, rectH);
 }
 
 
-int getFeatureValue(Feature *feature, IntegralImage *image,  int x, int y)
+static int getThreeVerticalValue(IntegralImage *image, int x, int y, int w, int h)
 {
+	int rectW = w;
+	int rectH = h/3;
+	return IntegralImageGetSum(image, x, y, rectW, rectH)
+		- IntegralImageGetSum(image, x, y + rectH, rectW, rectH)
+		+ IntegralImageGetSum(image, x, y + 2*rectH, rectW, rectH);
+}
+
+static int getThreeHorizontalValue(IntegralImage *image, int x, int y, int w, int h)
+{
+	int rectW = w / 3;
+	int rectH = h;
+	return IntegralImageGetSum(image, x, y, rectW, rectH)
+		- IntegralImageGetSum(image, x + rectW, y, rectW, rectH)
+		+ IntegralImageGetSum(image, x + 2 * rectW, y, rectW, rectH);
+}
+
+
+int FeatureGetValue(Feature *feature, IntegralImage *image,  int x, int y, double scale)
+{
+	int w = feature->w * scale;
+	int h = feature->h * scale;
+	x += feature->x * scale;
+	y += feature->y * scale;
+
+	
 	if(feature->type == FEATURE_FOUR)
-		return getFourRectValue(feature, image, x, y);
+		return getFourRectValue(image, x, y, w, h);
 	else if(feature->type == FEATURE_TWO_VERTICAL)
-		return getTwoVerticalValue(feature, image, x, y);
+		return getTwoVerticalValue(image, x, y, w, h);
 	else if(feature->type == FEATURE_TWO_HORIZONTAL)
-		return getTwoHorizontalValue(feature, image, x, y);
+		return getTwoHorizontalValue(image, x, y, w, h);
 	else if(feature->type == FEATURE_THREE_VERTICAL)
-		return getThreeVerticalValue(feature, image, x, y);
+		return getThreeVerticalValue(image, x, y, w, h);
 	else if(feature->type == FEATURE_THREE_HORIZONTAL)
-		return getThreeHorizontalValue(feature, image, x, y);
+		return getThreeHorizontalValue(image, x, y, w, h);
 
 	return 0;
+}
+
+Feature **FeatureListAll(size_t *size)
+{
+	Vector *features = VectorNew();
+
+	static int featuresMinWidth[]  = { 2, 1, 2, 1, 3};
+	static int featuresMinHeight[] = { 2, 2, 1, 3, 1};
+
+	for(int type = 1; type <= 5; ++type)
+	{
+		int minW = featuresMinWidth[type-1];
+		int minH = featuresMinHeight[type-1];
+		int maxX = WIN_WIDTH - minW;
+		int maxY = WIN_HEIGHT - minH;
+
+		for(int x = 0; x <= maxX; ++x)
+		{
+			for(int y = 0; y < maxY; ++y)
+			{
+				
+				int maxW = WIN_WIDTH - x;
+				int maxH = WIN_HEIGHT - y;
+
+				for(int w = minW; w <= maxW; w += minW)
+				{
+					for(int h = minH; h <= maxH; h += maxH)
+					{
+						VectorInsertBack(features, FeatureNew(type, x, y, w, h));
+					}
+				}
+			}
+		}
+	}
+
+	Feature **res = (Feature **) VectorData(features);
+	*size = VectorSize(features);
+	free(features);
+	return res;
 }

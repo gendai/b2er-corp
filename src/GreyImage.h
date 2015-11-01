@@ -7,7 +7,7 @@ struct GreyImage
 {
 	int width;
 	int height;
-	guchar *pixels;
+	int *pixels;
 };
 typedef struct GreyImage GreyImage;
 
